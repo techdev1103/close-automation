@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { PasswordInput } from "@/components/custom/password-input";
 import { LoadingButton } from "@/components/custom/loading-button";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 import {
   Form,
@@ -70,16 +70,10 @@ export function LoginPage() {
           await checkUserSession?.();
           router.refresh();
         } else {
-          toast({
-            variant: "destructive",
-            title: typeof error === "string" ? error : error.message,
-          });
+          toast(typeof error === "string" ? error : error.message);
         }
       } catch (error: any) {
-        toast({
-          variant: "destructive",
-          title: typeof error === "string" ? error : error.message,
-        });
+        toast(typeof error === "string" ? error : error.message);
       }
     }
   );

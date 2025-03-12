@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { AuthContext } from "./auth-context";
 
 import type { AuthState } from "../types";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 // ----------------------------------------------------------------------
 
 /**
@@ -54,10 +54,7 @@ export function AuthProvider({ children }: Props) {
           setState({ user: { ...session, ...session?.user }, loading: false });
           axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
         } else {
-          toast({
-            variant: "destructive",
-            title: "Please contact administrator to get the access.",
-          });
+          toast("Please contact administrator to get the access.");
           router.push("/login");
           throw { message: "Please contact administrator to get the access." };
         }
@@ -100,5 +97,9 @@ export function AuthProvider({ children }: Props) {
     [checkUserSession, state.user, status]
   );
 
-  return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={memoizedValue}>
+      {children}
+    </AuthContext.Provider>
+  );
 }

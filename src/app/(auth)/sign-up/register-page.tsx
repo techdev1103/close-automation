@@ -9,7 +9,7 @@ import { signUp } from "@/auth/context";
 import { useLoadingCallback } from "react-loading-hook";
 import { PasswordInput } from "@/components/custom/password-input";
 import { LoadingButton } from "@/components/custom/loading-button";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 import {
   Form,
@@ -41,7 +41,15 @@ export function RegisterPage() {
   });
 
   const [registerWithEmailAndPassword] = useLoadingCallback(
-    async ({ name, email, password }: { name: string; email: string; password: string }) => {
+    async ({
+      name,
+      email,
+      password,
+    }: {
+      name: string;
+      email: string;
+      password: string;
+    }) => {
       await signUp({
         name,
         email,
@@ -63,13 +71,9 @@ export function RegisterPage() {
     try {
       await registerWithEmailAndPassword(userData);
       setIsLoading(false);
-       
     } catch (error: any) {
       console.error("Registration error:", error);
-      toast({
-        variant: "destructive",
-        title: error?.message || "An error occurred while registering",
-      });
+      toast(error?.message || "An error occurred while registering");
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +82,9 @@ export function RegisterPage() {
   return (
     <>
       <div className="flex flex-col space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Create an account
+        </h1>
         <p className="text-sm text-muted-foreground">
           Enter your information below to create your account
         </p>
@@ -159,11 +165,17 @@ export function RegisterPage() {
       </div>
       <p className="px-8 text-center text-sm text-muted-foreground">
         By clicking continue, you agree to our{" "}
-        <Link href={paths.terms} className="underline underline-offset-4 hover:text-primary">
+        <Link
+          href={paths.terms}
+          className="underline underline-offset-4 hover:text-primary"
+        >
           Terms of Use
         </Link>{" "}
         and{" "}
-        <Link href={paths.privacy} className="underline underline-offset-4 hover:text-primary">
+        <Link
+          href={paths.privacy}
+          className="underline underline-offset-4 hover:text-primary"
+        >
           Privacy Policy
         </Link>
         .

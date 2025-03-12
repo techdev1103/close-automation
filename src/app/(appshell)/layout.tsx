@@ -9,7 +9,6 @@ import {
   SidebarTrigger,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/sonner";
 import { useState } from "react";
 
 // ----------------------------------------------------------------------
@@ -43,7 +42,6 @@ export default function Layout({ children }: Props) {
               {children}
             </div>
           </SidebarInset>
-          <Toaster />
         </SidebarProvider>
       </section>
     </AuthGuard>

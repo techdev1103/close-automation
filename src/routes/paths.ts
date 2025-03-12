@@ -17,4 +17,6 @@ export const paths = {
     updatePassword: `${ROOTS.AUTH}/update-password`,
     resetPassword: `${ROOTS.AUTH}/reset-password`,
   },
+  terms: "/terms",
+  privacy: "/privacy",
 };
