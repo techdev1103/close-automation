@@ -45,27 +45,26 @@ export default function HomePage() {
 
   const openInGoogleSheets = async () => {
     try {
-      const response = await fetch('/api/viewInSheet', {
+      const response = await fetch('/api/writeToSheet', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ responseData }),
+        body: JSON.stringify({ data: responseData }),
       });
 
-      const result = await response.json();
-
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to export to Google Sheets');
+        throw new Error('Failed to write to Google Sheets');
       }
 
-      setSheetUrl(result.sheetUrl);
-
-      // Open the sheet in a new tab
-      window.open(result.sheetUrl, '_blank');
-
-    } catch (err: any) {
-      console.error('Error exporting to Google Sheets:', err);
+      const result = await response.json();
+      if (result.success) {
+        // Open the Google Sheet in a new tab
+        window.open('https://docs.google.com/spreadsheets/d/1YDy62NyLDlE8ma6ai8OTusQVD_zro3kuMba5exZgCCs', '_blank');
+      }
+    } catch (error) {
+      console.error('Error writing to sheet:', error);
+      // You might want to show an error message to the user here
     }
   };
 
