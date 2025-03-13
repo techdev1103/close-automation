@@ -53,6 +53,7 @@ export default function HomePage() {
         body: JSON.stringify({ responseData }),
       });
 
+      console.log("-----1111111-----", response);
       const result = await response.json();
 
       if (!response.ok) {
@@ -72,14 +73,16 @@ export default function HomePage() {
   return (
     <div className="homepage-container">
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
-          <TableCell className="text-right">There are {responseData.length} tasks</TableCell>
-        </TableRow>
-
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableCell colSpan={3}>Total</TableCell>
+              <TableCell className="text-right">There are {responseData.length} tasks</TableCell>
+            </TableRow>
+          </TableHeader>
+        </Table>
         <Button onClick={openInGoogleSheets} variant="outline">View on sheet</Button>
       </div>
-
       <div>
         <Table>
           <TableCaption>A list of your recent tasks.</TableCaption>
@@ -95,16 +98,14 @@ export default function HomePage() {
               <TableHead>UpdatedByName</TableHead>
               <TableHead>Created_Date</TableHead>
               <TableHead className="text-right">Status</TableHead>
-
             </TableRow>
           </TableHeader>
           <TableBody>
-            {responseData.map((data: ResponseData, index: number) => (
+            {responseData && responseData.map((data: ResponseData, index: number) => (
               <TableRow key={data._type + data.id}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell className="font-medium">{data.id}</TableCell>
                 <TableCell>{data._type}</TableCell> {/* Changed from data.type to data._type */}
-
                 <TableCell>{data.text}</TableCell>
                 <TableCell>{data.assigned_to_name}</TableCell>
                 <TableCell>{data.created_by_name}</TableCell>
