@@ -1,18 +1,17 @@
 "use client"
 
-import React, { useState, useEffect } from "react";
-import axios from "axios";
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
-  TableRow,
-  TableFooter
-} from "@/components/ui/table"
-import { getServerSideProps } from "@/app/api/getFormData";
+  TableRow
+} from "@/components/ui/table";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const trigged_Data = [
   {
@@ -84,19 +83,9 @@ export default function HomePage() {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        // const apiKey = 'api_2r7XEIzH108gXnIOSxl2fo.7gEiGBa8Nfj9Qo4hC81jSQ';
-        // const basicAuth = btoa(`${apiKey}`);
-        // console.log("-----basicAuth----", basicAuth);
-        // const response = await axios.get('https://api.close.com/api/v1/activity/task_completed', {
-        //   headers: {
-        //     'Authorization': `Basic ${basicAuth}`, // Replace with your API key
-        //     'Content-Type': 'application/json'
-        //   },
-        // });
-
-        const responseData = getServerSideProps();
-        console.log("---response----", responseData)
-        // setResponseData(response.data);
+        const response = await axios.get('/api/getFormData');
+        console.log("---response----", response.data);
+        setResponseData(response.data);
       } catch (error) {
         console.error('Error fetching activities:', error);
       }
