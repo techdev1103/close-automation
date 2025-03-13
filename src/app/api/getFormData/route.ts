@@ -3,7 +3,12 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const apiKey = 'api_2r7XEIzH108gXnIOSxl2fo.7gEiGBa8Nfj9Qo4hC81jSQ';
+    const apiKey = process.env.CLOSE_API_KEY;
+    
+    if (!apiKey) {
+      return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
+    }
+
     const basicAuth = btoa(`${apiKey}`);
     
     const response = await axios.get('https://api.close.com/api/v1/activity/task_completed', {
