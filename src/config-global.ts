@@ -30,7 +30,7 @@ export const CONFIG: ConfigValue = {
    * Supabase
    */
   supabase: {
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    key: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://zkemuninggyvbqxgtzwy.supabase.co",
+    key: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InprZW11bmluZ2d5dmJxeGd0end5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3OTM1MjksImV4cCI6MjA1NzM2OTUyOX0.g6fFy-QNBUxG3hDQ2A4IwcOTZ36Q6A0hkw2wVVnubjE",
   },
 };
