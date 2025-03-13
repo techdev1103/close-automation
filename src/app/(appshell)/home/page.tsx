@@ -12,6 +12,7 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"; // Corrected import path
+import {  } from "@/app/(appshell)/taskTrigger/trigger"
 
 export default function HomePage() {
 
@@ -33,7 +34,6 @@ export default function HomePage() {
     const fetchActivities = async () => {
       try {
         const response = await axios.get('/api/getFormData');
-        console.log("---response----", response.data);
         setResponseData(response.data.data);
       } catch (error) {
         console.error('Error fetching activities:', error);
@@ -45,34 +45,33 @@ export default function HomePage() {
 
   const openInGoogleSheets = async () => {
     try {
-      const response = await fetch('/api/viewInSheet', {
+      const response = await fetch('/api/writeToSheet', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ responseData }),
+        body: JSON.stringify({ data: responseData }),
       });
 
-      console.log("-----1111111-----", response);
-      const result = await response.json();
-
+      console.log("----response---", response);
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to export to Google Sheets');
+        throw new Error('Failed to write to Google Sheets');
       }
 
-      setSheetUrl(result.sheetUrl);
-
-      // Open the sheet in a new tab
-      window.open(result.sheetUrl, '_blank');
-
-    } catch (err: any) {
-      console.error('Error exporting to Google Sheets:', err);
+      const result = await response.json();
+      if (result.success) {
+        // Open the Google Sheet in a new tab
+        window.open('https://docs.google.com/spreadsheets/d/1dpUxOPsFsUoDQ7rV9aqI0uBFZYNbTGXBA6Ze3aKxIGY', '_blank');
+      }
+    } catch (error) {
+      console.error('Error writing to sheet:', error);
+      // You might want to show an error message to the user here
     }
   };
 
   return (
     <div className="homepage-container">
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -81,7 +80,7 @@ export default function HomePage() {
             </TableRow>
           </TableHeader>
         </Table>
-        <Button onClick={openInGoogleSheets} variant="outline">View on sheet</Button>
+        <Button onClick={openInGoogleSheets} variant="outline">View more on sheet</Button>
       </div>
       <div>
         <Table>
