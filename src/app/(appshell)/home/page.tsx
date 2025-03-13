@@ -5,87 +5,36 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
-  TableHead,
   TableHeader,
-  TableRow
-} from "@/components/ui/table";
+  TableRow,
+  TableHead
+} from "@/components/ui/table"; // Corrected import path
 import axios from "axios";
 import { useEffect, useState } from "react";
-
-const trigged_Data = [
-  {
-    task_id: "Task001",
-    task_name: "Figma",
-    status: "Active",
-    updateByName: "John",
-    createdByName: "simon",
-    date_created: "2025-01-01",
-  },
-  {
-    task_id: "Task002",
-    task_name: "Unreal Engine",
-    status: "None",
-    updateByName: "David",
-    createdByName: "simon",
-    date_created: "2025-01-01",
-  },
-  {
-    task_id: "Task003",
-    task_name: "Kotlin",
-    status: "None",
-    updateByName: "Jackson",
-    createdByName: "simon",
-    date_created: "2025-01-01",
-  },
-  {
-    task_id: "Task004",
-    task_name: "Figma",
-    status: "Active",
-    updateByName: "John",
-    createdByName: "simon",
-    date_created: "2025-01-01",
-  },
-  {
-    task_id: "Task005",
-    task_name: "Figma",
-    status: "None",
-    updateByName: "David",
-    createdByName: "simon",
-    date_created: "2025-01-01",
-  },
-  {
-    task_id: "Task006",
-    task_name: "Unreal Engine",
-    status: "Active",
-    updateByName: "Jackson",
-    createdByName: "simon",
-    date_created: "2025-01-01",
-  },
-  {
-    task_id: "Task007",
-    task_name: "Kotlin",
-    status: "Active",
-    updateByName: "John",
-    createdByName: "simon",
-    date_created: "2025-01-01",
-  }
-]
-
-
-
-
+import { Button } from "@/components/ui/button"; // Corrected import path
 
 export default function HomePage() {
 
-  const [responseData, setResponseData] = useState([]);
+  interface ResponseData {
+    _type: string;
+    id: string;
+    text: string;
+    assigned_to_name: string;
+    created_by_name: string;
+    lead_name: string;
+    updated_by_name: string;
+    date: string;
+    is_completed: boolean;
+  }
 
+  const [responseData, setResponseData] = useState<ResponseData[]>([]);
+  const [sheetUrl, setSheetUrl] = useState<string | null>(null);
   useEffect(() => {
     const fetchActivities = async () => {
       try {
         const response = await axios.get('/api/getFormData');
         console.log("---response----", response.data);
-        setResponseData(response.data);
+        setResponseData(response.data.data);
       } catch (error) {
         console.error('Error fetching activities:', error);
       }
@@ -94,9 +43,43 @@ export default function HomePage() {
     fetchActivities();
   }, []);
 
+  const openInGoogleSheets = async () => {
+    try {
+      const response = await fetch('/api/viewInSheet', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ responseData }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to export to Google Sheets');
+      }
+
+      setSheetUrl(result.sheetUrl);
+
+      // Open the sheet in a new tab
+      window.open(result.sheetUrl, '_blank');
+
+    } catch (err: any) {
+      console.error('Error exporting to Google Sheets:', err);
+    }
+  };
+
   return (
     <div className="homepage-container">
-      <div>Welcome to here!</div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <TableRow>
+          <TableCell colSpan={3}>Total</TableCell>
+          <TableCell className="text-right">There are {responseData.length} tasks</TableCell>
+        </TableRow>
+
+        <Button onClick={openInGoogleSheets} variant="outline">View on sheet</Button>
+      </div>
+
       <div>
         <Table>
           <TableCaption>A list of your recent tasks.</TableCaption>
@@ -104,36 +87,46 @@ export default function HomePage() {
             <TableRow>
               <TableHead>No</TableHead>
               <TableHead>Task_ID</TableHead>
-              <TableHead className="w-[100px]">Task_Name</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>UpdateByName</TableHead>
+              <TableHead className="w-[100px]">Type</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead>Asign</TableHead>
               <TableHead>CreatedByName</TableHead>
-              <TableHead className="text-right">Date_Created</TableHead>
-              {/* <TableHead className="text-right">Amount</TableHead> */}
+              <TableHead>LeadName</TableHead>
+              <TableHead>UpdatedByName</TableHead>
+              <TableHead>Created_Date</TableHead>
+              <TableHead className="text-right">Status</TableHead>
+
             </TableRow>
           </TableHeader>
           <TableBody>
-            {trigged_Data.map((data, index) => (
-              <TableRow key={data.task_id + data.task_name}>
+            {responseData.map((data: ResponseData, index: number) => (
+              <TableRow key={data._type + data.id}>
                 <TableCell>{index + 1}</TableCell>
-                <TableCell className="font-medium">{data.task_id}</TableCell>
-                <TableCell>{data.task_name}</TableCell>
-                <TableCell>{data.status}</TableCell>
-                <TableCell>{data.updateByName}</TableCell>
-                <TableCell>{data.createdByName}</TableCell>
-                <TableCell className="text-right">{data.date_created}</TableCell>
+                <TableCell className="font-medium">{data.id}</TableCell>
+                <TableCell>{data._type}</TableCell> {/* Changed from data.type to data._type */}
+
+                <TableCell>{data.text}</TableCell>
+                <TableCell>{data.assigned_to_name}</TableCell>
+                <TableCell>{data.created_by_name}</TableCell>
+                <TableCell>{data.lead_name}</TableCell>
+                <TableCell>{data.updated_by_name}</TableCell>
+                <TableCell>{data.date}</TableCell>
+                <TableCell className="text-right">{data.is_completed ? 'Completed' : 'Not Completed'}</TableCell>
               </TableRow>
             ))}
           </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={3}>Total</TableCell>
-              <TableCell className="text-right">There are {trigged_Data.length} tasks</TableCell>
-            </TableRow>
-          </TableFooter>
         </Table>
-
       </div>
+      {sheetUrl && (
+        <a
+          href={sheetUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 text-sm hover:underline"
+        >
+          View sheet data
+        </a>
+      )}
     </div>
   )
 }

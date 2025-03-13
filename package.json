@@ -22,6 +22,7 @@
     "class-variance-authority": "^0.7.1",
     "close.io": "^1.3.0",
     "clsx": "^2.1.1",
+    "googleapis": "^146.0.0",
     "jotai": "^2.12.2",
     "lucide-react": "^0.479.0",
     "next": "15.2.2-canary.7",

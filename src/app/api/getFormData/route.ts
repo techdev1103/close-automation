@@ -11,7 +11,7 @@ export async function GET() {
 
     const basicAuth = btoa(`${apiKey}`);
     
-    const response = await axios.get('https://api.close.com/api/v1/activity/task_completed', {
+    const response = await axios.get('https://api.close.com/api/v1/task/', {
       headers: {
         'Authorization': `Basic ${basicAuth}`,
         'Content-Type': 'application/json'
