@@ -12,7 +12,6 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"; // Corrected import path
-import {  } from "@/app/(appshell)/taskTrigger/trigger"
 
 export default function HomePage() {
 
@@ -30,17 +29,29 @@ export default function HomePage() {
 
   const [responseData, setResponseData] = useState<ResponseData[]>([]);
   const [sheetUrl, setSheetUrl] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchActivities = async () => {
       try {
         const response = await axios.get('/api/getFormData');
+        console.log("---qqq----", response.data.data);
         setResponseData(response.data.data);
       } catch (error) {
         console.error('Error fetching activities:', error);
       }
     };
-
+    const triggerActivities = async () => {
+      try {
+        ;
+        const response = await axios.post('/api/taskTrigger');
+        console.log("---123----", response.data.data);
+        setResponseData(response.data.data);
+      } catch (error) {
+        console.error('Error trigger activities:', error);
+      }
+    };
     fetchActivities();
+    triggerActivities();
   }, []);
 
   const openInGoogleSheets = async () => {
@@ -53,7 +64,6 @@ export default function HomePage() {
         body: JSON.stringify({ data: responseData }),
       });
 
-      console.log("----response---", response);
       if (!response.ok) {
         throw new Error('Failed to write to Google Sheets');
       }
@@ -111,7 +121,7 @@ export default function HomePage() {
                 <TableCell>{data.lead_name}</TableCell>
                 <TableCell>{data.updated_by_name}</TableCell>
                 <TableCell>{data.date}</TableCell>
-                <TableCell className="text-right">{data.is_completed ? 'Completed' : 'Not Completed'}</TableCell>
+                <TableCell className="text-right">{data.is_complete ? 'Completed' : 'Not Completed'}</TableCell>
               </TableRow>
             ))}
           </TableBody>
