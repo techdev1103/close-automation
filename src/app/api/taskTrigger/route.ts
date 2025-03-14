@@ -31,7 +31,7 @@ export const registerWebhook = async () => {
       },
       {
         headers: {
-          'Authorization': `Basic ${basicAuth}`,
+          'Authorization': `Basic ${Buffer.from(apiKey + ':').toString('base64')}`,
           'Content-Type': 'application/json'
         }
       }

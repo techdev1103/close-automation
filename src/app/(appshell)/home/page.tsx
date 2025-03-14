@@ -12,6 +12,7 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"; // Corrected import path
+// import { registerWebhook } from "@/app/api/taskTrigger/route";
 
 export default function HomePage() {
 
@@ -34,24 +35,14 @@ export default function HomePage() {
     const fetchActivities = async () => {
       try {
         const response = await axios.get('/api/getFormData');
-        console.log("---qqq----", response.data.data);
+        console.log("---98798798798----", response.data.data);
         setResponseData(response.data.data);
       } catch (error) {
         console.error('Error fetching activities:', error);
       }
     };
-    const triggerActivities = async () => {
-      try {
-        ;
-        const response = await axios.post('/api/taskTrigger');
-        console.log("---123----", response.data.data);
-        setResponseData(response.data.data);
-      } catch (error) {
-        console.error('Error trigger activities:', error);
-      }
-    };
     fetchActivities();
-    triggerActivities();
+    // registerWebhook();  //call the register webhook function
   }, []);
 
   const openInGoogleSheets = async () => {
