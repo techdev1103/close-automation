@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios from "axios";
 import { NextResponse } from "next/server";
 
-const WEBHOOK_URL = 'https://59f2-89-187-161-220.ngrok-free.app';
+const WEBHOOK_URL = "https://59f2-89-187-161-220.ngrok-free.app";
 
 interface CloseWebhookResponse {
   id: string;
@@ -10,33 +10,38 @@ interface CloseWebhookResponse {
 }
 
 export const registerWebhook = async () => {
-
-  const apiKey = process.env.CLOSE_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_CLOSE_API_KEY;
 
   if (!apiKey) {
-    return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
+    return NextResponse.json(
+      { error: "API key not configured" },
+      { status: 500 }
+    );
   }
 
   const basicAuth = btoa(`${apiKey}`);
 
   try {
     const response = await axios.post<CloseWebhookResponse>(
-      'https://api.close.com/api/v1/webhook/',
+      "https://api.close.com/api/v1/webhook/",
 
       {
         url: WEBHOOK_URL,
-        events: [{ object_type: 'is_completed', action: 'true' },
-        { object_type: 'is_completed', action: 'false' }]
+        events: [
+          { object_type: "is_completed", action: "true" },
+          { object_type: "is_completed", action: "false" },
+        ],
       },
       {
         headers: {
-          'Authorization': `Basic ${Buffer.from(apiKey + ':').toString('base64')}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Basic ${Buffer.from(apiKey + ":").toString(
+            "base64"
+          )}`,
+          "Content-Type": "application/json",
+        },
       }
     );
   } catch (error) {
-    console.error('Webhook registration failed:', error);
+    console.error("Webhook registration failed:", error);
   }
 };
-

@@ -1,8 +1,8 @@
 // pages/api/webhook.ts
-import { NextApiRequest, NextApiResponse } from 'next';
-import { buffer } from 'micro';
+import { NextApiRequest, NextApiResponse } from "next";
+import { buffer } from "micro";
 import { NextResponse } from "next/server";
-import axios from 'axios';
+import axios from "axios";
 interface CloseWebhookEvent {
   object_type: string;
   action: string;
@@ -16,7 +16,10 @@ type WebhookEvent = {
   };
 };
 
-function replaceWithPreviousData(webhookData: WebhookEvent, secondData: DataObject): DataObject {
+function replaceWithPreviousData(
+  webhookData: WebhookEvent,
+  secondData: DataObject
+): DataObject {
   const previousData = webhookData.event.previous_data;
 
   // Create a new object with updated values
@@ -31,33 +34,39 @@ function replaceWithPreviousData(webhookData: WebhookEvent, secondData: DataObje
   return updatedData;
 }
 
-export async function POST(req: Request,) {
-  const apiKey = process.env.CLOSE_API_KEY;
+export async function POST(req: Request) {
+  const apiKey = process.env.NEXT_PUBLIC_CLOSE_API_KEY;
 
   const basicAuth = btoa(`${apiKey}`);
-  const response = await axios.get('https://api.close.com/api/v1/task/', {
+  const response = await axios.get("https://api.close.com/api/v1/task/", {
     headers: {
-      'Authorization': `Basic ${basicAuth}`,
-      'Content-Type': 'application/json'
+      Authorization: `Basic ${basicAuth}`,
+      "Content-Type": "application/json",
     },
   });
   try {
     const body = await req.json(); // Parse JSON body
     console.log("Webhook received:", body);
     const result = replaceWithPreviousData(body, response.data);
-    await fetch('http://localhost:3000/api/writeToSheet', {
-      method: 'POST',
+    await fetch("http://localhost:3000/api/writeToSheet", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ data: result }),
     });
 
     // Process the webhook data (e.g., update DB, trigger action, etc.)
 
-    return NextResponse.json({ success: true, message: "Webhook received!" }, { status: 200 });
+    return NextResponse.json(
+      { success: true, message: "Webhook received!" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error handling webhook:", error);
-    return NextResponse.json({ success: false, message: "Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: "Server Error" },
+      { status: 500 }
+    );
   }
 }
