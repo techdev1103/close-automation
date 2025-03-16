@@ -8,11 +8,15 @@ import {
   TableHeader,
   TableRow,
   TableHead,
-} from "@/components/ui/table"; // Corrected import path
-import axios from "axios";
+} from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button"; // Corrected import path
-// import { registerWebhook } from "@/app/api/taskTrigger/route";
+import { Button } from "@/components/ui/button";
+import { getTasks } from "@/actions/home";
+import { useAuthContext } from "@/auth/hooks";
+import { getUser } from "@/actions/user";
+import { toast } from "sonner";
+import { IUser } from "@/types/user";
+import { syncSheet } from "@/actions/home";
 
 export default function HomePage() {
   interface ResponseData {
@@ -29,16 +33,36 @@ export default function HomePage() {
 
   const [responseData, setResponseData] = useState<ResponseData[]>([]);
   const [sheetUrl, setSheetUrl] = useState<string | null>(null);
+  const [userData, setUserData] = useState<IUser | null>(null);
+  const { user } = useAuthContext();
 
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await axios.get("/api/getFormData");
+        // const response = await axios.get("/api/getFormData");
+        const response = await getTasks();
         setResponseData(response.data.data);
       } catch (error) {
         console.error("Error fetching activities:", error);
       }
     };
+
+    const fetchUserData = async () => {
+      const { data: tempUser, error: getUserError } = await getUser(
+        user?.id || ""
+      );
+
+      if (getUserError) {
+        toast("Update User Error.");
+      }
+
+      if (tempUser) {
+        setUserData(tempUser);
+      }
+      console.log("---userData----", userData);
+    };
+
+    fetchUserData();
     // fetchActivities();
   }, []);
 
@@ -51,13 +75,20 @@ export default function HomePage() {
         },
         body: JSON.stringify({ data: responseData }),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to write to Google Sheets");
+      console.log("----responseData----", responseData);
+      const reqData = {
+        data: responseData,
+        googleAuthKey: userData?.googleAuthKey,
+      };
+      const { data, error } = await syncSheet({
+        sheetId: userData?.sheetId || "",
+        data: [],
+        googleAuthKey: userData?.googleAuthKey || "",
+      });
+      if (error) {
+        return "writeToSheet error";
       }
-
-      const result = await response.json();
-      if (result.success) {
+      if (data) {
         // Open the Google Sheet in a new tab
         window.open(
           "https://docs.google.com/spreadsheets/d/1dpUxOPsFsUoDQ7rV9aqI0uBFZYNbTGXBA6Ze3aKxIGY",
@@ -89,7 +120,12 @@ export default function HomePage() {
             </TableRow>
           </TableHeader>
         </Table> */}
-        <Button onClick={openInGoogleSheets} variant="outline">
+        <Button
+          onClick={() => {
+            // openInGoogleSheets();
+          }}
+          variant="outline"
+        >
           View more on sheet
         </Button>
       </div>

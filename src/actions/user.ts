@@ -63,3 +63,14 @@ export const updateUser = async (
   }
   return { data };
 };
+
+
+export const registerWebhook = async (
+  {apiKey} : {apiKey: string}
+): Promise<{
+  data?: any;
+  error?: any;
+}> => {
+  console.log("apiKey->", apiKey)
+  return {data: "success"}
+}

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { EditFormPage } from "./edit-form/page";
-import { useAuthContext } from "@/auth/hooks";
 import { IUser } from "@/types/user";
+import { useAuthContext } from "@/auth/hooks";
 import { getUser } from "@/actions/user";
 import { toast } from "sonner";
 
