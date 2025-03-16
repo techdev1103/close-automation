@@ -35,7 +35,6 @@ export default function HomePage() {
     const fetchActivities = async () => {
       try {
         const response = await axios.get('/api/getFormData');
-        console.log("---98798798798----", response.data.data);
         setResponseData(response.data.data);
       } catch (error) {
         console.error('Error fetching activities:', error);

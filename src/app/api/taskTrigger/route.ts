@@ -10,7 +10,6 @@ interface CloseWebhookResponse {
 }
 
 export const registerWebhook = async () => {
-  console.log("----registerWebbook function is called----");
 
   const apiKey = process.env.CLOSE_API_KEY;
 
@@ -36,8 +35,6 @@ export const registerWebhook = async () => {
         }
       }
     );
-    console.log("=----response----", response);
-    console.log('Webhook registered:', response.data);
   } catch (error) {
     console.error('Webhook registration failed:', error);
   }
