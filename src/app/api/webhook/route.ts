@@ -8,11 +8,6 @@ interface CloseWebhookEvent {
   action: string;
   data: Record<string, any>;
 }
-interface CloseEventData {
-  // Add the structure of the event data that Close.com will send (you can refer to the Close.com docs for the exact structure)
-  event_type: string;
-  data: any; // Replace with the actual data type if necessary
-}
 
 export async function POST(req: Request,) {
   try {
