@@ -29,9 +29,9 @@ function replaceWithPreviousData(
   return updatedData;
 }
 
-export async function getTasks() {
+export async function getTasks({ apiKey }: { apiKey: any }) {
   try {
-    const apiKey = process.env.NEXT_PUBLIC_CLOSE_API_KEY;
+    // const apiKey = process.env.NEXT_PUBLIC_CLOSE_API_KEY;
 
     if (!apiKey) {
       return { error: "API key not configured" };
@@ -61,7 +61,6 @@ export async function syncSheet({
   data: [];
   googleAuthKey: string;
 }) {
-  console.log("----request----", data);
   try {
     // Authenticate with Google Sheets API
     const auth = new google.auth.GoogleAuth({
@@ -75,7 +74,7 @@ export async function syncSheet({
     const sheets = google.sheets({ version: "v4", auth });
 
     // Spreadsheet ID and range (replace with your own Google Sheet's ID)
-    const spreadsheetId = "1dpUxOPsFsUoDQ7rV9aqI0uBFZYNbTGXBA6Ze3aKxIGY"; // Replace with your Google Sheet ID
+    // const spreadsheetId = "1dpUxOPsFsUoDQ7rV9aqI0uBFZYNbTGXBA6Ze3aKxIGY"; // Replace with your Google Sheet ID
     const range = "Sheet1!A1"; // Specify the range where data will be written
 
     // Get data from the request body
@@ -84,7 +83,7 @@ export async function syncSheet({
     const values = data && data.map((row: any) => Object.values(row)); // Convert objects to arrays
     // Append data to Google Sheet
     await sheets.spreadsheets.values.update({
-      spreadsheetId,
+      sheetId,
       range,
       valueInputOption: "RAW", // RAW or USER_ENTERED
       requestBody: {

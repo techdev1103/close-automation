@@ -37,16 +37,6 @@ export default function HomePage() {
   const { user } = useAuthContext();
 
   useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        // const response = await axios.get("/api/getFormData");
-        const response = await getTasks();
-        setResponseData(response.data.data);
-      } catch (error) {
-        console.error("Error fetching activities:", error);
-      }
-    };
-
     const fetchUserData = async () => {
       const { data: tempUser, error: getUserError } = await getUser(
         user?.id || ""
@@ -58,9 +48,26 @@ export default function HomePage() {
 
       if (tempUser) {
         setUserData(tempUser);
+        try {
+          // const response = await axios.get("/api/getFormData");
+          const response = await getTasks({ apiKey: tempUser?.closeApiKey });
+          setResponseData(response.data);
+        } catch (error) {
+          console.error("Error fetching activities:", error);
+        }
       }
-      console.log("---userData----", userData);
     };
+    // const fetchActivities = async () => {
+    //   try {
+    //     // const response = await axios.get("/api/getFormData");
+    //     console.log("---userData----", userData);
+    //     const response = await getTasks({ apiKey: userData?.closeApiKey });
+    //     console.log("---response----", response);
+    //     setResponseData(response.data);
+    //   } catch (error) {
+    //     console.error("Error fetching activities:", error);
+    //   }
+    // };
 
     fetchUserData();
     // fetchActivities();
@@ -75,7 +82,6 @@ export default function HomePage() {
         },
         body: JSON.stringify({ data: responseData }),
       });
-      console.log("----responseData----", responseData);
       const reqData = {
         data: responseData,
         googleAuthKey: userData?.googleAuthKey,
@@ -91,7 +97,7 @@ export default function HomePage() {
       if (data) {
         // Open the Google Sheet in a new tab
         window.open(
-          "https://docs.google.com/spreadsheets/d/1dpUxOPsFsUoDQ7rV9aqI0uBFZYNbTGXBA6Ze3aKxIGY",
+          `https://docs.google.com/spreadsheets/d/${userData?.closeApiKey}`,
           "_blank"
         );
       }
@@ -110,7 +116,7 @@ export default function HomePage() {
           marginBottom: 10,
         }}
       >
-        {/* <Table>
+        <Table>
           <TableHeader>
             <TableRow>
               <TableCell colSpan={3}>Total</TableCell>
@@ -119,7 +125,7 @@ export default function HomePage() {
               </TableCell>
             </TableRow>
           </TableHeader>
-        </Table> */}
+        </Table>
         <Button
           onClick={() => {
             // openInGoogleSheets();
