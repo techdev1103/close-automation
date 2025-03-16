@@ -19,4 +19,5 @@ export const paths = {
   },
   terms: "/terms",
   privacy: "/privacy",
+  settings: "/settings",
 };

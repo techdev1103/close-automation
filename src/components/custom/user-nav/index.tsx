@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { paths } from "@/routes/paths";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
@@ -36,11 +37,9 @@ export function UserNav() {
           variant="secondary"
           size="icon"
           className="rounded-full text-xl antialiased select:none drop-shadow-sm"
-          style={{ width: '30px', height: '30px' }}
+          style={{ width: "30px", height: "30px" }}
         >
-          <Avatar
-            style={{ width: '15px', height: '15px' }}
-          >
+          <Avatar style={{ width: "15px", height: "15px" }}>
             {user?.photoURL && <AvatarImage src={user?.photoURL} />}
             <AvatarFallback>{user?.displayName?.slice(0, 1)}</AvatarFallback>
           </Avatar>
@@ -58,6 +57,12 @@ export function UserNav() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem
+          disabled={isLogoutLoading || hasLoggedOut}
+          onClick={() => router.push(paths.settings)}
+        >
+          Settings
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           disabled={isLogoutLoading || hasLoggedOut}

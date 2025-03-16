@@ -2,12 +2,13 @@
 import { google } from "googleapis";
 import { NextResponse } from "next/server";
 
-
 export async function POST(request: Request) {
   try {
     // Authenticate with Google Sheets API
     const auth = new google.auth.GoogleAuth({
-      credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY), // Load credentials from environment
+      credentials: JSON.parse(
+        process.env.NEXT_PUBLIC_GOOGLE_SERVICE_ACCOUNT_KEY
+      ), // Load credentials from environment
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
