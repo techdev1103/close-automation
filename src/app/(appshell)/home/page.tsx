@@ -16,7 +16,10 @@ import { useAuthContext } from "@/auth/hooks";
 import { getUser } from "@/actions/user";
 import { toast } from "sonner";
 import { IUser } from "@/types/user";
+import { ITask } from "@/types/task";
 import { syncSheet } from "@/actions/home";
+import { DataTable } from "@/components/pages/home/data-table";
+import { columns } from "@/components/pages/home/columns";
 
 export default function HomePage() {
   interface ResponseData {
@@ -35,6 +38,7 @@ export default function HomePage() {
   const [sheetUrl, setSheetUrl] = useState<string | null>(null);
   const [userData, setUserData] = useState<IUser | null>(null);
   const { user } = useAuthContext();
+  const [tasks, setTasks] = useState<ITask[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -51,7 +55,8 @@ export default function HomePage() {
         try {
           // const response = await axios.get("/api/getFormData");
           const response = await getTasks({ apiKey: tempUser?.closeApiKey });
-          setResponseData(response.data);
+
+          setTasks(response);
         } catch (error) {
           console.error("Error fetching activities:", error);
         }
@@ -127,63 +132,7 @@ export default function HomePage() {
           marginBottom: 10,
         }}
       >
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableCell colSpan={3}>Total</TableCell>
-              <TableCell className="text-right">
-                There are {responseData.length} tasks
-              </TableCell>
-            </TableRow>
-          </TableHeader>
-        </Table>
-        <Button
-          onClick={() => {
-            openInGoogleSheets();
-          }}
-          variant="outline"
-        >
-          View more on sheet
-        </Button>
-      </div>
-      <div>
-        <Table>
-          <TableCaption>A list of your recent tasks.</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead>No</TableHead>
-              <TableHead>Task_ID</TableHead>
-              <TableHead className="w-[100px]">Type</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Asign</TableHead>
-              <TableHead>CreatedByName</TableHead>
-              <TableHead>LeadName</TableHead>
-              <TableHead>UpdatedByName</TableHead>
-              <TableHead>Created_Date</TableHead>
-              <TableHead className="text-right">Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {responseData &&
-              responseData.map((data: ResponseData, index: number) => (
-                <TableRow key={data._type + data.id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell className="font-medium">{data.id}</TableCell>
-                  <TableCell>{data._type}</TableCell>{" "}
-                  {/* Changed from data.type to data._type */}
-                  <TableCell>{data.text}</TableCell>
-                  <TableCell>{data.assigned_to_name}</TableCell>
-                  <TableCell>{data.created_by_name}</TableCell>
-                  <TableCell>{data.lead_name}</TableCell>
-                  <TableCell>{data.updated_by_name}</TableCell>
-                  <TableCell>{data.date}</TableCell>
-                  <TableCell className="text-right">
-                    {/* {data.is_complete ? "Completed" : "Not Completed"} */}
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
+        <DataTable columns={columns} data={tasks} />
       </div>
       {sheetUrl && (
         <a

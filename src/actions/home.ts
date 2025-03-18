@@ -37,13 +37,44 @@ export async function getTasks({ apiKey }: { apiKey: any }) {
 
     const basicAuth = btoa(`${apiKey}`);
 
-    const response = await axios.get("https://api.close.com/api/v1/task/", {
+    const { data } = await axios.get("https://api.close.com/api/v1/task/", {
       headers: {
         Authorization: `Basic ${basicAuth}`,
         "Content-Type": "application/json",
       },
     });
-    return response.data;
+
+    const tempTasks = data.data.map((task: any) => {
+      return {
+        id: task.id,
+        assignedTo: task.assigned_to,
+        assignedToName: task.assigned_to_name,
+        contactId: task.contact_id,
+        contactName: task.contact_name,
+        createdBy: task.created_by,
+        createdByName: task.created_by_name,
+        date: task.date,
+        dateCreated: task.date_created,
+        dateUpdated: task.date_updated,
+        deduplicationKey: task.deduplication_key,
+        dueDate: task.due_date,
+        isComplete: task.is_complete,
+        isDateLess: task.is_dateless,
+        isPrimiaryLeadNotification: task.is_primary_lead_notification,
+        leadId: task.lead_id,
+        leadName: task.lead_name,
+        objectId: task.object_id,
+        objectType: task.object_type,
+        organizationId: task.organization_id,
+        text: task.text,
+        updatedBy: task.updated_by,
+        updatedByName: task.updated_by_name,
+        view: task.view,
+        type: task._type,
+      };
+    });
+
+    return tempTasks;
   } catch (error) {
     console.error("Error fetching data:", error);
     return { error: "Failed to fetch data" };
