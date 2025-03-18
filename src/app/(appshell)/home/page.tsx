@@ -74,37 +74,48 @@ export default function HomePage() {
   }, []);
 
   const openInGoogleSheets = async () => {
+    // try {
     try {
-      const response = await fetch("/api/writeToSheet", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data: responseData }),
-      });
-      const reqData = {
-        data: responseData,
-        googleAuthKey: userData?.googleAuthKey,
-      };
+      console.log("------responseData-----", responseData);
+      // const response = await fetch("/api/writeToSheet", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ data: responseData }),
+      // });
+      // const reqData = {
+      //   data: responseData,
+      //   googleAuthKey: userData?.googleAuthKey,
+      // };
       const { data, error } = await syncSheet({
         sheetId: userData?.sheetId || "",
-        data: [],
+        data: responseData,
         googleAuthKey: userData?.googleAuthKey || "",
       });
       if (error) {
-        return "writeToSheet error";
+        console.log("writeToSheet error");
       }
       if (data) {
         // Open the Google Sheet in a new tab
+        // if (!response.ok) {
+        //   console.log("------error---");
+        // } else {
+        console.log("------success----");
         window.open(
-          `https://docs.google.com/spreadsheets/d/${userData?.closeApiKey}`,
+          `https://docs.google.com/spreadsheets/d/${userData?.sheetId}`,
           "_blank"
         );
       }
-    } catch (error) {
-      console.error("Error writing to sheet:", error);
-      // You might want to show an error message to the user here
+    } catch {
+      console.log("-----unsuccessful----");
     }
+    //   }
+    // } catch (error) {
+    //   console.error("Error writing to sheet:", error);
+    //   // You might want to show an error message to the user here
+    // }
+    // }
   };
 
   return (
@@ -128,7 +139,7 @@ export default function HomePage() {
         </Table>
         <Button
           onClick={() => {
-            // openInGoogleSheets();
+            openInGoogleSheets();
           }}
           variant="outline"
         >

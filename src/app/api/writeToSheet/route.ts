@@ -19,8 +19,11 @@ export async function POST(request: Request) {
     const range = "Sheet1!A1"; // Specify the range where data will be written
 
     // Get data from the request body
+    console.log("----request----", request);
     const { data } = await request.json(); // Add await here to properly parse the JSON body
-    const values = data && data.data.map((row) => Object.values(row)); // Convert objects to arrays
+    console.log("-----data----", data);
+    // console.log("-------data.data----", data.data[0]);
+    const values = data && data.map((row) => Object.values(row)); // Convert objects to arrays
     // Append data to Google Sheet
     await sheets.spreadsheets.values.update({
       spreadsheetId,
