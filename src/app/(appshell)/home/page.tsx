@@ -8,11 +8,15 @@ import {
   TableHeader,
   TableRow,
   TableHead,
-} from "@/components/ui/table"; // Corrected import path
-import axios from "axios";
+} from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button"; // Corrected import path
-// import { registerWebhook } from "@/app/api/taskTrigger/route";
+import { Button } from "@/components/ui/button";
+import { getTasks } from "@/actions/home";
+import { useAuthContext } from "@/auth/hooks";
+import { getUser } from "@/actions/user";
+import { toast } from "sonner";
+import { IUser } from "@/types/user";
+import { syncSheet } from "@/actions/home";
 
 export default function HomePage() {
   interface ResponseData {
@@ -29,45 +33,89 @@ export default function HomePage() {
 
   const [responseData, setResponseData] = useState<ResponseData[]>([]);
   const [sheetUrl, setSheetUrl] = useState<string | null>(null);
+  const [userData, setUserData] = useState<IUser | null>(null);
+  const { user } = useAuthContext();
 
   useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        const response = await axios.get("/api/getFormData");
-        setResponseData(response.data.data);
-      } catch (error) {
-        console.error("Error fetching activities:", error);
+    const fetchUserData = async () => {
+      const { data: tempUser, error: getUserError } = await getUser(
+        user?.id || ""
+      );
+
+      if (getUserError) {
+        toast("Update User Error.");
+      }
+
+      if (tempUser) {
+        setUserData(tempUser);
+        try {
+          // const response = await axios.get("/api/getFormData");
+          const response = await getTasks({ apiKey: tempUser?.closeApiKey });
+          setResponseData(response.data);
+        } catch (error) {
+          console.error("Error fetching activities:", error);
+        }
       }
     };
+    // const fetchActivities = async () => {
+    //   try {
+    //     // const response = await axios.get("/api/getFormData");
+    //     console.log("---userData----", userData);
+    //     const response = await getTasks({ apiKey: userData?.closeApiKey });
+    //     console.log("---response----", response);
+    //     setResponseData(response.data);
+    //   } catch (error) {
+    //     console.error("Error fetching activities:", error);
+    //   }
+    // };
+
+    fetchUserData();
     // fetchActivities();
   }, []);
 
   const openInGoogleSheets = async () => {
+    // try {
     try {
-      const response = await fetch("/api/writeToSheet", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data: responseData }),
+      console.log("------responseData-----", responseData);
+      // const response = await fetch("/api/writeToSheet", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ data: responseData }),
+      // });
+      // const reqData = {
+      //   data: responseData,
+      //   googleAuthKey: userData?.googleAuthKey,
+      // };
+      const { data, error } = await syncSheet({
+        sheetId: userData?.sheetId || "",
+        data: responseData,
+        googleAuthKey: userData?.googleAuthKey || "",
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to write to Google Sheets");
+      if (error) {
+        console.log("writeToSheet error");
       }
-
-      const result = await response.json();
-      if (result.success) {
+      if (data) {
         // Open the Google Sheet in a new tab
+        // if (!response.ok) {
+        //   console.log("------error---");
+        // } else {
+        console.log("------success----");
         window.open(
-          "https://docs.google.com/spreadsheets/d/1dpUxOPsFsUoDQ7rV9aqI0uBFZYNbTGXBA6Ze3aKxIGY",
+          `https://docs.google.com/spreadsheets/d/${userData?.sheetId}`,
           "_blank"
         );
       }
-    } catch (error) {
-      console.error("Error writing to sheet:", error);
-      // You might want to show an error message to the user here
+    } catch {
+      console.log("-----unsuccessful----");
     }
+    //   }
+    // } catch (error) {
+    //   console.error("Error writing to sheet:", error);
+    //   // You might want to show an error message to the user here
+    // }
+    // }
   };
 
   return (
@@ -79,7 +127,7 @@ export default function HomePage() {
           marginBottom: 10,
         }}
       >
-        {/* <Table>
+        <Table>
           <TableHeader>
             <TableRow>
               <TableCell colSpan={3}>Total</TableCell>
@@ -88,8 +136,13 @@ export default function HomePage() {
               </TableCell>
             </TableRow>
           </TableHeader>
-        </Table> */}
-        <Button onClick={openInGoogleSheets} variant="outline">
+        </Table>
+        <Button
+          onClick={() => {
+            openInGoogleSheets();
+          }}
+          variant="outline"
+        >
           View more on sheet
         </Button>
       </div>

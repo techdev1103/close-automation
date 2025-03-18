@@ -3,6 +3,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { buffer } from "micro";
 import { NextResponse } from "next/server";
 import axios from "axios";
+import { supabase } from "@/lib/supabase";
+import { syncSheet } from "@/actions/home";
 interface CloseWebhookEvent {
   object_type: string;
   action: string;
@@ -46,26 +48,40 @@ export async function POST(req: Request) {
   });
   try {
     const body = await req.json(); // Parse JSON body
-    console.log("Webhook received:", body);
     const result = replaceWithPreviousData(body, response.data);
-    await fetch("http://localhost:3000/api/writeToSheet", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ data: result }),
+    const { data: user, error: getUserError } = await supabase
+      .from("users")
+      .select("*")
+      .like("close_api_key", `%${body.event.api_key_id}%`);
+
+    if (users?.length === 0) {
+      return NextResponse.json({ message: "no user found" }, { status: 404 });
+    }
+
+    if (getUsersError) {
+      console.log("getUsersError->", getUsersError);
+      return NextResponse.json(
+        { message: "getuser info error" },
+        { status: 500 }
+      );
+    }
+
+    const user = users[0];
+
+    const { data } = await syncSheet({
+      sheetId: user?.sheet_id || "",
+      data: result.data,
+      googleAuthKey: user?.google_auth_key || "",
     });
 
     // Process the webhook data (e.g., update DB, trigger action, etc.)
-
-    return NextResponse.json(
-      { success: true, message: "Webhook received!" },
-      { status: 200 }
-    );
+    if (data) {
+      return NextResponse.json({ message: "Webhook processed successfully" });
+    }
   } catch (error) {
     console.error("Error handling webhook:", error);
     return NextResponse.json(
-      { success: false, message: "Server Error" },
+      { message: "Error processing webhook", error: error.message },
       { status: 500 }
     );
   }

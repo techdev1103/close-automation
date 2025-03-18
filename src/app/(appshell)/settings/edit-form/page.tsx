@@ -14,7 +14,7 @@ import {
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { updateUser } from "@/actions/user";
+import { registerWebhook, updateUser } from "@/actions/user";
 import { useAuthContext } from "@/auth/hooks";
 import { toast } from "sonner";
 import { IUser } from "@/types/user";
@@ -38,6 +38,7 @@ export function EditFormPage({ setting }: { setting: IUser }) {
 
   const onSubmit = async (data: CreateUserFormValues) => {
     const { error: updateUserError } = await updateUser(user?.id || "", data);
+    await registerWebhook({apiKey: ""});
 
     if (updateUserError) {
       toast("Update User Error.");
