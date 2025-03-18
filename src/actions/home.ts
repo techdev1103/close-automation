@@ -31,8 +31,6 @@ function replaceWithPreviousData(
 
 export async function getTasks({ apiKey }: { apiKey: any }) {
   try {
-    // const apiKey = process.env.NEXT_PUBLIC_CLOSE_API_KEY;
-
     if (!apiKey) {
       return { error: "API key not configured" };
     }
