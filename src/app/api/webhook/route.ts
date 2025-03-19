@@ -1,15 +1,8 @@
-// pages/api/webhook.ts
-import { NextApiRequest, NextApiResponse } from "next";
-import { buffer } from "micro";
 import { NextResponse } from "next/server";
 import axios from "axios";
 import { supabase } from "@/lib/supabase";
 import { syncSheet } from "@/actions/home";
-interface CloseWebhookEvent {
-  object_type: string;
-  action: string;
-  data: Record<string, any>;
-}
+
 type DataObject = Record<string, any>;
 
 type WebhookEvent = {
@@ -49,7 +42,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json(); // Parse JSON body
     const result = replaceWithPreviousData(body, response.data);
-    const { data: user, error: getUserError } = await supabase
+    const { data: users, error: getUsersError } = await supabase
       .from("users")
       .select("*")
       .like("close_api_key", `%${body.event.api_key_id}%`);

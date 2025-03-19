@@ -1,6 +1,5 @@
 "use client";
 
-import { Cross2Icon } from "@radix-ui/react-icons";
 import { Table } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
@@ -9,15 +8,15 @@ import { DataTableViewOptions } from "@/components/custom/table/data-table-view-
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  syncSheet: () => void;
 }
 
 export function DataTableToolbar<TData>({
   table,
+  syncSheet,
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0;
-
   return (
-    <div className="flex justify-between">
+    <div className="flex w-full justify-between">
       <div>
         <Input
           placeholder="Filter lead name..."
@@ -31,7 +30,13 @@ export function DataTableToolbar<TData>({
         />
       </div>
       <div className="flex gap-4">
-        <Button>Sync with Sheet</Button>
+        <Button
+          onClick={() => {
+            syncSheet();
+          }}
+        >
+          Sync with Sheet
+        </Button>
         <DataTableViewOptions table={table} />
       </div>
     </div>

@@ -34,7 +34,6 @@ export default function HomePage() {
     is_completed: boolean;
   }
 
-  const [responseData, setResponseData] = useState<ResponseData[]>([]);
   const [sheetUrl, setSheetUrl] = useState<string | null>(null);
   const [userData, setUserData] = useState<IUser | null>(null);
   const { user } = useAuthContext();
@@ -78,35 +77,19 @@ export default function HomePage() {
     // fetchActivities();
   }, []);
 
-  const openInGoogleSheets = async () => {
+  const initSyncSheet = async () => {
     // try {
     try {
-      console.log("------responseData-----", responseData);
-      // const response = await fetch("/api/writeToSheet", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ data: responseData }),
-      // });
-      // const reqData = {
-      //   data: responseData,
-      //   googleAuthKey: userData?.googleAuthKey,
-      // };
+      console.log("------responseData-----", tasks.length);
       const { data, error } = await syncSheet({
         sheetId: userData?.sheetId || "",
-        data: responseData,
+        data: tasks,
         googleAuthKey: userData?.googleAuthKey || "",
       });
       if (error) {
         console.log("writeToSheet error");
       }
       if (data) {
-        // Open the Google Sheet in a new tab
-        // if (!response.ok) {
-        //   console.log("------error---");
-        // } else {
-        console.log("------success----");
         window.open(
           `https://docs.google.com/spreadsheets/d/${userData?.sheetId}`,
           "_blank"
@@ -115,12 +98,6 @@ export default function HomePage() {
     } catch {
       console.log("-----unsuccessful----");
     }
-    //   }
-    // } catch (error) {
-    //   console.error("Error writing to sheet:", error);
-    //   // You might want to show an error message to the user here
-    // }
-    // }
   };
 
   return (
@@ -132,7 +109,7 @@ export default function HomePage() {
           marginBottom: 10,
         }}
       >
-        <DataTable columns={columns} data={tasks} />
+        <DataTable columns={columns} data={tasks} syncSheet={initSyncSheet} />
       </div>
       {sheetUrl && (
         <a

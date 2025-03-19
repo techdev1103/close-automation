@@ -35,7 +35,7 @@ export const columns: ColumnDef<ITask>[] = [
   {
     accessorKey: "date",
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="date" />;
+      return <DataTableColumnHeader column={column} title="Date created" />;
     },
     cell: ({ row }) => {
       return <div className="w-[100px]">{row.getValue("date")}</div>;

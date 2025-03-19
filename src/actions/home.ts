@@ -91,52 +91,16 @@ export async function syncSheet({
   googleAuthKey: string;
 }) {
   try {
-    // Authenticate with Google Sheets API
-    // const auth = new google.auth.GoogleAuth({
-    //   credentials: JSON.parse(
-    //     // process.env.NEXT_PUBLIC_GOOGLE_SERVICE_ACCOUNT_KEY
-    //     googleAuthKey
-    //   ), // Load credentials from environment
-    //   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-    // });
-    // const sheets = google.sheets({ version: "v4", auth });
-
-    // // Spreadsheet ID and range (replace with your own Google Sheet's ID)
-    // // const spreadsheetId = "1dpUxOPsFsUoDQ7rV9aqI0uBFZYNbTGXBA6Ze3aKxIGY"; // Replace with your Google Sheet ID
-    // const range = "Sheet1!A1"; // Specify the range where data will be written
-
-    // // Get data from the request body
-    // // const { data } = await data.json(); // Add await here to properly parse the JSON body
-
-    // const values = data && data.map((row: any) => Object.values(row)); // Convert objects to arrays
-    // console.log("------auth success----", values);
-    // // Append data to Google Sheet
-    // await sheets.spreadsheets.values.update({
-    //   spreadsheetId: sheetId,
-    //   range,
-    //   valueInputOption: "RAW", // RAW or USER_ENTERED
-    //   requestBody: {
-    //     values,
-    //   },
-    // });
-
     const auth = new google.auth.GoogleAuth({
-      credentials: JSON.parse(
-        // process.env.NEXT_PUBLIC_GOOGLE_SERVICE_ACCOUNT_KEY
-        googleAuthKey
-      ), // Load credentials from environment
+      credentials: JSON.parse(googleAuthKey),
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    // Spreadsheet ID and range (replace with your own Google Sheet's ID)
-    const spreadsheetId = "1dpUxOPsFsUoDQ7rV9aqI0uBFZYNbTGXBA6Ze3aKxIGY"; // Replace with your Google Sheet ID
-    const range = "Sheet1!A1"; // Specify the range where data will be written
+    const range = "Sheet1!A2"; // Specify the range where data will be written
 
-    // Get data from the request body
-    // const real_data = await data.json(); // Add await here to properly parse the JSON body
-    const values = data && data.map((row) => Object.values(row)); // Convert objects to arrays
+    const values = data && data.map((row: any) => Object.values(row)); // Convert objects to arrays
     // Append data to Google Sheet
     await sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,

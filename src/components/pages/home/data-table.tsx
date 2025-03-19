@@ -30,11 +30,13 @@ import { DataTableToolbar } from "./data-table-toolbar";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  syncSheet: () => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  syncSheet,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -63,7 +65,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="w-full">
       <div className="flex justify-between items-center py-4 max-sm:gap-4">
-        <DataTableToolbar table={table} />
+        <DataTableToolbar table={table} syncSheet={syncSheet} />
       </div>
       <div className="rounded-md border">
         <Table>
