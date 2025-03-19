@@ -52,16 +52,22 @@ export async function POST(req: Request) {
     const { data: user, error: getUserError } = await supabase
       .from("users")
       .select("*")
-      .like("close_api_key", `%${body.event.api_key_id}%`)
-      .single();
-    if (getUserError) {
+      .like("close_api_key", `%${body.event.api_key_id}%`);
+
+    if (users?.length === 0) {
+      return NextResponse.json({ message: "no user found" }, { status: 404 });
+    }
+
+    if (getUsersError) {
+      console.log("getUsersError->", getUsersError);
       return NextResponse.json(
-        { message: "get user info error" },
-        { status: 405 }
+        { message: "getuser info error" },
+        { status: 500 }
       );
     }
 
-    console.log("---result---", result.data);
+    const user = users[0];
+
     const { data } = await syncSheet({
       sheetId: user?.sheet_id || "",
       data: result.data,
