@@ -178,7 +178,7 @@ export default function HomePage() {
                   <TableCell>{data.updated_by_name}</TableCell>
                   <TableCell>{data.date}</TableCell>
                   <TableCell className="text-right">
-                    {/* {data.is_complete ? "Completed" : "Not Completed"} */}
+                    {data.is_complete ? "Completed" : "Not Completed"}
                   </TableCell>
                 </TableRow>
               ))}
