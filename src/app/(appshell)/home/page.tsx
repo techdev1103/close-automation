@@ -81,13 +81,13 @@ export default function HomePage() {
     // try {
     try {
       console.log("------responseData-----", tasks.length);
-      const { data, error } = await syncSheet({
+      const { data, error: syncSheetError } = await syncSheet({
         sheetId: userData?.sheetId || "",
         data: tasks,
         googleAuthKey: userData?.googleAuthKey || "",
       });
-      if (error) {
-        console.log("writeToSheet error");
+      if (syncSheetError) {
+        console.log("syncSheetError->", syncSheetError);
       }
       if (data) {
         window.open(
