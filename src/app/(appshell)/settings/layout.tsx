@@ -5,5 +5,5 @@ type Props = {
 };
 
 export default function Layout({ children }: Props) {
-  return <section className="w-full h-full overflow-auto">{children}</section>;
+  return <section className="w-full h-full">{children}</section>;
 }
