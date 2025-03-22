@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useState } from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -23,7 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "@/components/custom/table/data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 

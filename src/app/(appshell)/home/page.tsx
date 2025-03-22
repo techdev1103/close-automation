@@ -53,9 +53,34 @@ export default function HomePage() {
         setUserData(tempUser);
         try {
           // const response = await axios.get("/api/getFormData");
-          const response = await getTasks({ apiKey: tempUser?.closeApiKey });
+          const taskPerPage = 100;
+          const page = 1;
+          let tempTasks = [];
 
-          setTasks(response);
+          const { hasMore, totalResults, data } = await getTasks({
+            apiKey: tempUser?.closeApiKey || "",
+            limit: taskPerPage,
+            page: page,
+          });
+
+          tempTasks.push(...data);
+
+          if (hasMore) {
+            const numberOfPages = totalResults / 100 + 1;
+            const arr = Array.from({ length: numberOfPages }, (_, i) => i);
+
+            for (var index = 1; index <= arr.length; index++) {
+              const { data } = await getTasks({
+                apiKey: tempUser?.closeApiKey || "",
+                limit: taskPerPage,
+                page: index + 1,
+              });
+
+              tempTasks.push(...data);
+            }
+          }
+
+          setTasks(tempTasks);
         } catch (error) {
           console.error("Error fetching activities:", error);
         }
@@ -78,9 +103,7 @@ export default function HomePage() {
   }, []);
 
   const initSyncSheet = async () => {
-    // try {
     try {
-      console.log("------responseData-----", tasks.length);
       const { data, error: syncSheetError } = await syncSheet({
         sheetId: userData?.sheetId || "",
         data: tasks,

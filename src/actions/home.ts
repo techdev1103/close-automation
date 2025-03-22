@@ -29,7 +29,15 @@ function replaceWithPreviousData(
   return updatedData;
 }
 
-export async function getTasks({ apiKey }: { apiKey: any }) {
+export async function getTasks({
+  apiKey,
+  limit,
+  page,
+}: {
+  apiKey: string;
+  limit: number;
+  page: number;
+}) {
   try {
     if (!apiKey) {
       return { error: "API key not configured" };
@@ -42,8 +50,11 @@ export async function getTasks({ apiKey }: { apiKey: any }) {
         Authorization: `Basic ${basicAuth}`,
         "Content-Type": "application/json",
       },
+      params: {
+        _limit: limit,
+        _skip: (page - 1) * limit,
+      },
     });
-
     const tempTasks = data.data.map((task: any) => {
       return {
         id: task.id,
@@ -74,7 +85,11 @@ export async function getTasks({ apiKey }: { apiKey: any }) {
       };
     });
 
-    return tempTasks;
+    return {
+      hasMore: data.has_more,
+      totalResults: data.total_results,
+      data: tempTasks,
+    };
   } catch (error) {
     console.error("Error fetching data:", error);
     return { error: "Failed to fetch data" };
@@ -90,6 +105,8 @@ export async function syncSheet({
   data: any;
   googleAuthKey: string;
 }) {
+  console.log("sheetId, googleAuthKey->", sheetId, googleAuthKey);
+
   try {
     const auth = new google.auth.GoogleAuth({
       credentials: JSON.parse(googleAuthKey),
@@ -111,7 +128,6 @@ export async function syncSheet({
       },
     });
 
-    console.log("----update success----");
     return { data: "success" };
   } catch (error: any) {
     console.error("Google Sheets API error:", error);
