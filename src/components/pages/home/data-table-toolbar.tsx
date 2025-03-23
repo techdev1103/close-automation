@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Table } from "@tanstack/react-table";
+import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +17,7 @@ export function DataTableToolbar<TData>({
   table,
   syncSheet,
 }: DataTableToolbarProps<TData>) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   return (
     <div className="flex w-full justify-between">
       <div>
@@ -31,10 +34,13 @@ export function DataTableToolbar<TData>({
       </div>
       <div className="flex gap-4">
         <Button
-          onClick={() => {
-            syncSheet();
+          onClick={async () => {
+            setIsLoading(true);
+            await syncSheet();
+            setIsLoading(false);
           }}
         >
+          {isLoading && <Loader2 className="animate-spin" />}
           Sync with Sheet
         </Button>
         <DataTableViewOptions table={table} />

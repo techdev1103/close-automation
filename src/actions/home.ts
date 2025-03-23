@@ -29,7 +29,15 @@ function replaceWithPreviousData(
   return updatedData;
 }
 
-export async function getTasks({ apiKey }: { apiKey: any }) {
+export async function getTasks({
+  apiKey,
+  limit,
+  page,
+}: {
+  apiKey: string;
+  limit: number;
+  page: number;
+}) {
   try {
     if (!apiKey) {
       return { error: "API key not configured" };
@@ -42,8 +50,11 @@ export async function getTasks({ apiKey }: { apiKey: any }) {
         Authorization: `Basic ${basicAuth}`,
         "Content-Type": "application/json",
       },
+      params: {
+        _limit: limit,
+        _skip: (page - 1) * limit,
+      },
     });
-
     const tempTasks = data.data.map((task: any) => {
       return {
         id: task.id,
@@ -74,7 +85,11 @@ export async function getTasks({ apiKey }: { apiKey: any }) {
       };
     });
 
-    return tempTasks;
+    return {
+      hasMore: data.has_more,
+      totalResults: data.total_results,
+      data: tempTasks,
+    };
   } catch (error) {
     console.error("Error fetching data:", error);
     return { error: "Failed to fetch data" };
@@ -97,10 +112,59 @@ export async function syncSheet({
     });
 
     const sheets = google.sheets({ version: "v4", auth });
+    const range = "Sheet1!A1"; // Specify the range where data will be written
 
-    const range = "Sheet1!A2"; // Specify the range where data will be written
+    const sortedDataByFielddata = data.map((item: any) => {
+      return {
+        leadName: item.leadName,
+        text: item.text,
+        type: item.type,
+        view: item.view,
+        dueDate: item.dueDate,
+        createdByName: item.createdByName,
+        updatedByName: item.updatedByName,
+        isComplete: item.isComplete,
+        assignedToName: item.assignedToName,
+        date: item.date,
+        dateCreated: item.dateCreated,
+        dateUpdated: item.dateUpdated,
+        id: item.id,
+      };
+    });
 
-    const values = data && data.map((row: any) => Object.values(row)); // Convert objects to arrays
+    const values =
+      sortedDataByFielddata &&
+      sortedDataByFielddata.map((row: any) => Object.values(row)); // Convert objects to arrays
+    const sheetHeader = [
+      // "Lead Id",
+      "Lead Name",
+      "Text",
+      "Type",
+      "View",
+      "Due Date",
+      "Created By Name",
+      "Updated By Name",
+      "Is Complete",
+      // "Assigned To",
+      "Assigned To Name",
+      "Date",
+      "Date Created",
+      "Date Updated",
+      "Id",
+      // "Contact Id",
+      // "Contact Name",
+      // "Created By",
+      // "Deduplication Key",
+      // "Is DateLess",
+      // "Is Primary Lead Notification",
+      // "Object Id",
+      // "Object Type",
+      // "Organization Id",
+      // "Updated By",
+    ];
+
+    values.unshift(sheetHeader);
+
     // Append data to Google Sheet
     await sheets.spreadsheets.values.update({
       spreadsheetId: sheetId,
@@ -111,7 +175,6 @@ export async function syncSheet({
       },
     });
 
-    console.log("----update success----");
     return { data: "success" };
   } catch (error: any) {
     console.error("Google Sheets API error:", error);

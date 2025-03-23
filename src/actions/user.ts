@@ -79,14 +79,10 @@ export const registerWebhook = async ({
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization:
-          "Basic " +
-          Buffer.from(
-            "api_2r7XEIzH108gXnIOSxl2fo.7gEiGBa8Nfj9Qo4hC81jSQ:"
-          ).toString("base64"),
+        Authorization: "Basic " + Buffer.from(apiKey).toString("base64"),
       },
       body: JSON.stringify({
-        url: "https://1471-89-187-161-220.ngrok-free.app/api/webhook",
+        url: "https://afa5-89-187-161-220.ngrok-free.app/api/close-webhook",
         events: [
           { object_type: "task.lead", action: "created" },
           { object_type: "task.lead", action: "updated" },
@@ -96,7 +92,7 @@ export const registerWebhook = async ({
       }),
     });
 
-    return { data: "success" };
+    return { data: "succes" };
   } catch (error) {
     console.log("error->", error);
     return { error: error };
