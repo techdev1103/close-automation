@@ -2,6 +2,7 @@
 
 import { supabase } from "@/lib/supabase";
 import { IUser } from "@/types/user";
+import { CONFIG } from "@/config-global";
 
 export const getUser = async (
   id: string
@@ -82,7 +83,7 @@ export const registerWebhook = async ({
         Authorization: "Basic " + Buffer.from(apiKey).toString("base64"),
       },
       body: JSON.stringify({
-        url: "https://afa5-89-187-161-220.ngrok-free.app/api/close-webhook",
+        url: `${CONFIG.prodUrl}/api/close-webhook`,
         events: [
           { object_type: "task.lead", action: "created" },
           { object_type: "task.lead", action: "updated" },
