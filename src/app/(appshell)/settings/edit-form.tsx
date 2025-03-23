@@ -20,11 +20,13 @@ import { registerWebhook } from "@/actions/user";
 import { useAuthContext } from "@/auth/hooks";
 import { toast } from "sonner";
 import { IUser } from "@/types/user";
+import { useRouter } from "next/navigation";
 
 // ----------------------------------------------------------------------
 
 export const EditFormPage = ({ setting }: { setting: IUser }) => {
   const { user } = useAuthContext();
+  const router = useRouter();
 
   const defaultValues: Partial<CreateUserFormValues> = {
     displayName: setting.displayName,
@@ -40,11 +42,14 @@ export const EditFormPage = ({ setting }: { setting: IUser }) => {
 
   const onSubmit = async (data: CreateUserFormValues) => {
     const { error: updateUserError } = await updateUser(user?.id || "", data);
-    await registerWebhook({
-      apiKey: setting.closeApiKey || "",
-    });
+    const { data: testData, error: registerWebhookError } =
+      await registerWebhook({
+        apiKey: setting.closeApiKey || "",
+      });
 
-    if (updateUserError) {
+    console.log("testData->");
+
+    if (updateUserError && registerWebhookError) {
       toast("Update User Error.");
     } else {
       toast("Setting is updated successfully.");
@@ -120,7 +125,7 @@ export const EditFormPage = ({ setting }: { setting: IUser }) => {
                   variant="outline"
                   type="button"
                   onClick={() => {
-                    console.log("here is cancel button");
+                    router.push("/home");
                   }}
                 >
                   Cancel

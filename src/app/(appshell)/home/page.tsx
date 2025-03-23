@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHeader,
-  TableRow,
-  TableHead,
-} from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { getTasks } from "@/actions/home";
 import { useAuthContext } from "@/auth/hooks";
 import { getUser } from "@/actions/user";
@@ -22,22 +12,10 @@ import { DataTable } from "@/components/pages/home/data-table";
 import { columns } from "@/components/pages/home/columns";
 
 export default function HomePage() {
-  interface ResponseData {
-    _type: string;
-    id: string;
-    text: string;
-    assigned_to_name: string;
-    created_by_name: string;
-    lead_name: string;
-    updated_by_name: string;
-    date: string;
-    is_completed: boolean;
-  }
-
-  const [sheetUrl, setSheetUrl] = useState<string | null>(null);
   const [userData, setUserData] = useState<IUser | null>(null);
   const { user } = useAuthContext();
   const [tasks, setTasks] = useState<ITask[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -52,7 +30,7 @@ export default function HomePage() {
       if (tempUser) {
         setUserData(tempUser);
         try {
-          // const response = await axios.get("/api/getFormData");
+          setIsLoading(true);
           const taskPerPage = 100;
           const page = 1;
           let tempTasks = [];
@@ -81,47 +59,43 @@ export default function HomePage() {
           }
 
           setTasks(tempTasks);
+          setIsLoading(false);
         } catch (error) {
           console.error("Error fetching activities:", error);
         }
       }
     };
-    // const fetchActivities = async () => {
-    //   try {
-    //     // const response = await axios.get("/api/getFormData");
-    //     console.log("---userData----", userData);
-    //     const response = await getTasks({ apiKey: userData?.closeApiKey });
-    //     console.log("---response----", response);
-    //     setResponseData(response.data);
-    //   } catch (error) {
-    //     console.error("Error fetching activities:", error);
-    //   }
-    // };
 
     fetchUserData();
-    // fetchActivities();
   }, []);
 
   const initSyncSheet = async () => {
     try {
-      const { data, error: syncSheetError } = await syncSheet({
+      const { error: syncSheetError } = await syncSheet({
         sheetId: userData?.sheetId || "",
         data: tasks,
         googleAuthKey: userData?.googleAuthKey || "",
       });
       if (syncSheetError) {
         console.log("syncSheetError->", syncSheetError);
+        return;
       }
-      if (data) {
-        window.open(
-          `https://docs.google.com/spreadsheets/d/${userData?.sheetId}`,
-          "_blank"
-        );
-      }
+
+      toast("Google Sheet is synchronized successfully.");
+      // if (data) {
+      //   window.open(
+      //     `https://docs.google.com/spreadsheets/d/${userData?.sheetId}`,
+      //     "_blank"
+      //   );
+      // }
     } catch {
       console.log("-----unsuccessful----");
     }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="homepage-container">
@@ -134,16 +108,6 @@ export default function HomePage() {
       >
         <DataTable columns={columns} data={tasks} syncSheet={initSyncSheet} />
       </div>
-      {sheetUrl && (
-        <a
-          href={sheetUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 text-sm hover:underline"
-        >
-          View sheet data
-        </a>
-      )}
     </div>
   );
 }

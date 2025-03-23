@@ -59,18 +59,30 @@ export async function POST(req: Request) {
       );
     }
 
-    const user = users[0];
+    users.forEach(async (user) => {
+      try {
+        const { data } = await syncSheet({
+          sheetId: user?.sheet_id || "",
+          data: result.data,
+          googleAuthKey: user?.google_auth_key || "",
+        });
 
-    const { data } = await syncSheet({
-      sheetId: user?.sheet_id || "",
-      data: result.data,
-      googleAuthKey: user?.google_auth_key || "",
+        console.log(
+          "user?.email, user?.sheet_id->",
+          user?.email,
+          user?.sheet_id
+        );
+      } catch (error) {
+        console.error("Error handling webhook:", error);
+        return NextResponse.json(
+          { message: "Error processing webhook", error: error.message },
+          { status: 500 }
+        );
+      }
     });
 
     // Process the webhook data (e.g., update DB, trigger action, etc.)
-    if (data) {
-      return NextResponse.json({ message: "Webhook processed successfully" });
-    }
+    return NextResponse.json({ message: "Webhook processed successfully" });
   } catch (error) {
     console.error("Error handling webhook:", error);
     return NextResponse.json(
