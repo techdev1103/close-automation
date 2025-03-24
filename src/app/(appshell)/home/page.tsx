@@ -70,27 +70,23 @@ export default function HomePage() {
   }, []);
 
   const initSyncSheet = async () => {
-    try {
-      const { error: syncSheetError } = await syncSheet({
-        sheetId: userData?.sheetId || "",
-        data: tasks,
-        googleAuthKey: userData?.googleAuthKey || "",
-      });
-      if (syncSheetError) {
-        console.log("syncSheetError->", syncSheetError);
-        return;
-      }
-
-      toast("Google Sheet is synchronized successfully.");
-      // if (data) {
-      //   window.open(
-      //     `https://docs.google.com/spreadsheets/d/${userData?.sheetId}`,
-      //     "_blank"
-      //   );
-      // }
-    } catch {
-      console.log("-----unsuccessful----");
+    const { error: syncSheetError } = await syncSheet({
+      sheetId: userData?.sheetId || "",
+      data: tasks,
+      googleAuthKey: userData?.googleAuthKey || "",
+    });
+    if (syncSheetError) {
+      console.log("syncSheetError->", syncSheetError);
+      return;
     }
+
+    toast("Google Sheet is synchronized successfully.");
+    // if (data) {
+    //   window.open(
+    //     `https://docs.google.com/spreadsheets/d/${userData?.sheetId}`,
+    //     "_blank"
+    //   );
+    // }
   };
 
   if (isLoading) {

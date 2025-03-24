@@ -47,8 +47,6 @@ export const EditFormPage = ({ setting }: { setting: IUser }) => {
         apiKey: setting.closeApiKey || "",
       });
 
-    console.log("testData->");
-
     if (updateUserError && registerWebhookError) {
       toast("Update User Error.");
     } else {
