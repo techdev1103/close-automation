@@ -15,7 +15,7 @@ export default function HomePage() {
   const [userData, setUserData] = useState<IUser | null>(null);
   const { user } = useAuthContext();
   const [tasks, setTasks] = useState<ITask[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -31,7 +31,7 @@ export default function HomePage() {
         setUserData(tempUser);
         try {
           setIsLoading(true);
-          const taskPerPage = 100;
+          const taskPerPage = 500;
           const page = 1;
           let tempTasks = [];
 
