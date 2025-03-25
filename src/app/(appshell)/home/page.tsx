@@ -15,7 +15,7 @@ export default function HomePage() {
   const [userData, setUserData] = useState<IUser | null>(null);
   const { user } = useAuthContext();
   const [tasks, setTasks] = useState<ITask[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -31,7 +31,7 @@ export default function HomePage() {
         setUserData(tempUser);
         try {
           setIsLoading(true);
-          const taskPerPage = 100;
+          const taskPerPage = 500;
           const page = 1;
           let tempTasks = [];
 
@@ -70,27 +70,23 @@ export default function HomePage() {
   }, []);
 
   const initSyncSheet = async () => {
-    try {
-      const { error: syncSheetError } = await syncSheet({
-        sheetId: userData?.sheetId || "",
-        data: tasks,
-        googleAuthKey: userData?.googleAuthKey || "",
-      });
-      if (syncSheetError) {
-        console.log("syncSheetError->", syncSheetError);
-        return;
-      }
-
-      toast("Google Sheet is synchronized successfully.");
-      // if (data) {
-      //   window.open(
-      //     `https://docs.google.com/spreadsheets/d/${userData?.sheetId}`,
-      //     "_blank"
-      //   );
-      // }
-    } catch {
-      console.log("-----unsuccessful----");
+    const { error: syncSheetError } = await syncSheet({
+      sheetId: userData?.sheetId || "",
+      data: tasks,
+      googleAuthKey: userData?.googleAuthKey || "",
+    });
+    if (syncSheetError) {
+      console.log("syncSheetError->", syncSheetError);
+      return;
     }
+
+    toast("Google Sheet is synchronized successfully.");
+    // if (data) {
+    //   window.open(
+    //     `https://docs.google.com/spreadsheets/d/${userData?.sheetId}`,
+    //     "_blank"
+    //   );
+    // }
   };
 
   if (isLoading) {

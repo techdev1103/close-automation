@@ -30,6 +30,7 @@
     "fs": "^0.0.1-security",
     "googleapis": "^146.0.0",
     "jotai": "^2.12.2",
+    "lightningcss": "^1.29.3",
     "lucide-react": "^0.479.0",
     "micro": "^10.0.1",
     "net": "^1.0.2",

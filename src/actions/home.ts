@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { google } from "googleapis";
+import { fDate } from "@/utils/format-time";
 
 type DataObject = Record<string, any>;
 
@@ -116,19 +117,20 @@ export async function syncSheet({
 
     const sortedDataByFielddata = data.map((item: any) => {
       return {
+        leadId: item.leadId,
+        id: item.id,
         leadName: item.leadName,
         text: item.text,
         type: item.type,
         view: item.view,
-        dueDate: item.dueDate,
+        dueDate: fDate(item.dueDate),
         createdByName: item.createdByName,
         updatedByName: item.updatedByName,
         isComplete: item.isComplete,
         assignedToName: item.assignedToName,
-        date: item.date,
-        dateCreated: item.dateCreated,
-        dateUpdated: item.dateUpdated,
-        id: item.id,
+        date: fDate(item.date),
+        dateCreated: fDate(item.dateCreated),
+        dateUpdated: fDate(item.dateUpdated),
       };
     });
 
@@ -136,9 +138,10 @@ export async function syncSheet({
       sortedDataByFielddata &&
       sortedDataByFielddata.map((row: any) => Object.values(row)); // Convert objects to arrays
     const sheetHeader = [
-      // "Lead Id",
+      "Lead Id",
+      "Task Id",
       "Lead Name",
-      "Text",
+      "Task Description",
       "Type",
       "View",
       "Due Date",
@@ -150,7 +153,6 @@ export async function syncSheet({
       "Date",
       "Date Created",
       "Date Updated",
-      "Id",
       // "Contact Id",
       // "Contact Name",
       // "Created By",
