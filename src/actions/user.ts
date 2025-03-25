@@ -95,7 +95,7 @@ export const registerWebhook = async ({
 
     return { data: "succes" };
   } catch (error) {
-    console.log("error->", error);
+    console.log("registerWebhook error->", error);
     return { error: error };
   }
 };
