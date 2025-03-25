@@ -1,15 +1,8 @@
-// pages/api/webhook.ts
-import { NextApiRequest, NextApiResponse } from "next";
-import { buffer } from "micro";
 import { NextResponse } from "next/server";
 import axios from "axios";
 import { supabase } from "@/lib/supabase";
 import { syncSheet } from "@/actions/home";
-interface CloseWebhookEvent {
-  object_type: string;
-  action: string;
-  data: Record<string, any>;
-}
+
 type DataObject = Record<string, any>;
 
 type WebhookEvent = {
@@ -49,7 +42,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json(); // Parse JSON body
     const result = replaceWithPreviousData(body, response.data);
-    const { data: user, error: getUserError } = await supabase
+    const { data: users, error: getUsersError } = await supabase
       .from("users")
       .select("*")
       .like("close_api_key", `%${body.event.api_key_id}%`);
@@ -66,18 +59,30 @@ export async function POST(req: Request) {
       );
     }
 
-    const user = users[0];
+    users.forEach(async (user) => {
+      try {
+        const { data } = await syncSheet({
+          sheetId: user?.sheet_id || "",
+          data: result.data,
+          googleAuthKey: user?.google_auth_key || "",
+        });
 
-    const { data } = await syncSheet({
-      sheetId: user?.sheet_id || "",
-      data: result.data,
-      googleAuthKey: user?.google_auth_key || "",
+        console.log(
+          "user?.email, user?.sheet_id->",
+          user?.email,
+          user?.sheet_id
+        );
+      } catch (error) {
+        console.error("Error handling webhook:", error);
+        return NextResponse.json(
+          { message: "Error processing webhook", error: error.message },
+          { status: 500 }
+        );
+      }
     });
 
     // Process the webhook data (e.g., update DB, trigger action, etc.)
-    if (data) {
-      return NextResponse.json({ message: "Webhook processed successfully" });
-    }
+    return NextResponse.json({ message: "Webhook processed successfully" });
   } catch (error) {
     console.error("Error handling webhook:", error);
     return NextResponse.json(

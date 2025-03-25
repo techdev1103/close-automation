@@ -11,18 +11,22 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { registerWebhook, updateUser } from "@/actions/user";
+import { updateUser } from "@/actions/user";
+import { registerWebhook } from "@/actions/user";
 import { useAuthContext } from "@/auth/hooks";
 import { toast } from "sonner";
 import { IUser } from "@/types/user";
+import { useRouter } from "next/navigation";
 
 // ----------------------------------------------------------------------
 
-export function EditFormPage({ setting }: { setting: IUser }) {
+export const EditFormPage = ({ setting }: { setting: IUser }) => {
   const { user } = useAuthContext();
+  const router = useRouter();
 
   const defaultValues: Partial<CreateUserFormValues> = {
     displayName: setting.displayName,
@@ -38,9 +42,14 @@ export function EditFormPage({ setting }: { setting: IUser }) {
 
   const onSubmit = async (data: CreateUserFormValues) => {
     const { error: updateUserError } = await updateUser(user?.id || "", data);
-    await registerWebhook({apiKey: ""});
+    const { data: testData, error: registerWebhookError } =
+      await registerWebhook({
+        apiKey: setting.closeApiKey || "",
+      });
 
-    if (updateUserError) {
+    console.log("testData->");
+
+    if (updateUserError && registerWebhookError) {
       toast("Update User Error.");
     } else {
       toast("Setting is updated successfully.");
@@ -48,7 +57,7 @@ export function EditFormPage({ setting }: { setting: IUser }) {
   };
 
   return (
-    <div className="flex flex-col overflow-auto mx-auto p-6 gap-4">
+    <div className="flex flex-col mx-auto p-6 gap-4">
       <div className="text-[32px]">Setting</div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -99,7 +108,10 @@ export function EditFormPage({ setting }: { setting: IUser }) {
                 <FormItem>
                   <FormLabel>Google Auth Key</FormLabel>
                   <FormControl>
-                    <Input placeholder="enter a google auth key" {...field} />
+                    <Textarea
+                      placeholder="enter a google auth key"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -111,17 +123,14 @@ export function EditFormPage({ setting }: { setting: IUser }) {
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  size="sm"
                   type="button"
                   onClick={() => {
-                    console.log("here is cancel button");
+                    router.push("/home");
                   }}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="sm">
-                  Save
-                </Button>
+                <Button type="submit">Save</Button>
               </div>
             </div>
           </div>
@@ -129,4 +138,4 @@ export function EditFormPage({ setting }: { setting: IUser }) {
       </Form>
     </div>
   );
-}
+};

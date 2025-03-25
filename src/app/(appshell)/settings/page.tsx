@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { EditFormPage } from "./edit-form/page";
+import { EditFormPage } from "./edit-form";
 import { IUser } from "@/types/user";
 import { useAuthContext } from "@/auth/hooks";
 import { getUser } from "@/actions/user";

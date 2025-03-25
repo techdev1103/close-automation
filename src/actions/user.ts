@@ -1,5 +1,8 @@
+"use server";
+
 import { supabase } from "@/lib/supabase";
 import { IUser } from "@/types/user";
+import { CONFIG } from "@/config-global";
 
 export const getUser = async (
   id: string
@@ -61,16 +64,38 @@ export const updateUser = async (
     console.error(`updateUser Error:`, error);
     return { error };
   }
-  return { data };
 };
 
-
-export const registerWebhook = async (
-  {apiKey} : {apiKey: string}
-): Promise<{
+export const registerWebhook = async ({
+  apiKey,
+}: {
+  apiKey: string;
+}): Promise<{
   data?: any;
   error?: any;
 }> => {
-  console.log("apiKey->", apiKey)
-  return {data: "success"}
-}
+  try {
+    await fetch("https://api.close.com/api/v1/webhook/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: "Basic " + Buffer.from(apiKey).toString("base64"),
+      },
+      body: JSON.stringify({
+        url: `${CONFIG.prodUrl}/api/close-webhook`,
+        events: [
+          { object_type: "task.lead", action: "created" },
+          { object_type: "task.lead", action: "updated" },
+          { object_type: "task.lead", action: "deleted" },
+          { object_type: "task.lead", action: "completed" },
+        ],
+      }),
+    });
+
+    return { data: "succes" };
+  } catch (error) {
+    console.log("error->", error);
+    return { error: error };
+  }
+};
