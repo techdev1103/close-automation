@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ITask } from "@/types/task";
 import { DataTableColumnHeader } from "@/components/custom/table/data-table-column-header";
+import { fDate } from "@/utils/format-time";
 
 export const columns: ColumnDef<ITask>[] = [
   {
@@ -38,7 +39,7 @@ export const columns: ColumnDef<ITask>[] = [
       return <DataTableColumnHeader column={column} title="Date created" />;
     },
     cell: ({ row }) => {
-      return <div className="w-[100px]">{row.getValue("date")}</div>;
+      return <div className="w-[100px]">{fDate(row.getValue("date"))}</div>;
     },
   },
 ];
